@@ -63,7 +63,7 @@ watch(
   height: 100%;
   transition: 0.25s;
   z-index: -1;
-
+  opacity: .45;
   .bg {
     transform: scale(1);
     filter: blur(0);

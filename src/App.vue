@@ -1,14 +1,15 @@
 <script setup>
 import Background from "./components/Background/index.vue"
+import tiangou from "./view/tiangou.vue";
 import { onMounted, onBeforeUnmount, watch } from "vue";
 import cursorInit from "./utils/cursor.js"
 onMounted(()=>{
   // 自定义鼠标
   cursorInit();
   // 欢迎提示
-  helloInit();
+  // helloInit();
   // 默哀模式
-  checkDays();
+  // checkDays();
   // 加载完成事件
   window.addEventListener("load", () => {
     console.log("加载完成");
@@ -47,9 +48,12 @@ onMounted(()=>{
 
 <template>
   <div >
-    <Background>
+    <Background/>
 
-    </Background>
+      <div class="main">
+        <tiangou></tiangou>
+      </div>
+
 
   </div>
 </template>

@@ -44,7 +44,7 @@ p:hover {
   src: url("/font/UnidreamLED.ttf") format("truetype");
 }
 #app {
-  position: absolute;
+  /* position: absolute; */
   top: 0;
   left: 0;
   width: 100vw;
