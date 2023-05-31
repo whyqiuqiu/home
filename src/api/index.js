@@ -1,5 +1,6 @@
 import {
-    get
+    get,
+    getmusic
 } from './request.js'
 
 export const INDEXKEY = import.meta.env.VITE_SITE_BASEKEY;
@@ -8,3 +9,14 @@ export const gettiangou = (key) => {
     return get(`/tiangou/index?key=${key}`);
 }
 // ?key=${Key}
+
+
+// 网易云data
+const music_base = import.meta.env.VITE_SITE_MUSIC;
+
+export const searchmusic= (keyworlds)=>{
+    return getmusic(`/cloudsearch?keywords=${keyworlds}`);
+    
+}
+
+

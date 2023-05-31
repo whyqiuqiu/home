@@ -1,6 +1,7 @@
 <script setup>
 import Background from "./components/Background/index.vue"
 import tiangou from "./view/tiangou.vue";
+import music from "./view/music.vue";
 import { onMounted, onBeforeUnmount, watch } from "vue";
 import cursorInit from "./utils/cursor.js"
 onMounted(()=>{
@@ -52,6 +53,7 @@ onMounted(()=>{
 
       <div class="main">
         <tiangou></tiangou>
+        <music></music>
       </div>
 
 

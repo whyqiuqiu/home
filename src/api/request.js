@@ -1,6 +1,6 @@
 import axios from 'axios'
 // let Base64 = require('js-base64').Base64;
-
+let music_base = import.meta.env.VITE_SITE_MUSIC;
 let base = import.meta.env.VITE_SITE_BASE;
 let requestHead = {
     headers: {
@@ -12,6 +12,19 @@ let requestHead = {
 
 export function get(url) {
     return axios.get(base + url, requestHead)
+        .then(res => {
+            if (res.status !== 200) return null;
+            return res.data;
+        }).catch(err => {
+            console.error(err);
+            // window.vue.$message.error(err.message);
+            // window.vue.$store.commit('changeLonding', false);
+            return err;
+        });
+};
+// 网易云get
+export function getmusic(url) {
+    return axios.get(music_base + url, requestHead)
         .then(res => {
             if (res.status !== 200) return null;
             return res.data;
