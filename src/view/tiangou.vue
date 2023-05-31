@@ -1,19 +1,21 @@
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { h ,ref, reactive, onMounted } from 'vue'
 import { gettiangou, INDEXKEY } from "../api/index"
 import debounce from "../utils/debounce.js"
 import { mainStore } from "../store/index";
+import { ElNotification } from 'element-plus'
 const store = mainStore();
 
 // 获取舔狗文案
 const maintext = ref(null)
-const textresult = ref(null)
+const textresult = ref('目前访问量过多，请稍后再试')
 // 开启音乐状态
 const isdoghover = ref(false)
 
 
 const gettiangouData = () => {
     gettiangou(INDEXKEY).then((res) => {
+        maintext.value = "打开音乐播放器"
         if (res.code = 200) {
             console.log(res)
             textresult.value = res.result.content
@@ -43,6 +45,11 @@ const updatetiangou = () => {
 // 音乐盒打开
 const openmusicplay = () =>{
    store.musicOpenState = true
+// 通知
+   ElNotification({
+    title: '提醒',
+    message: h('i', { style: 'color: teal' }, '已经打开搜索工具'),
+  })
 }
 
 
@@ -58,7 +65,7 @@ const openmusicplay = () =>{
                 <el-text type="primary" class="mx-1" size="large" v-model="textresult">{{ textresult }}</el-text>
             </div>
             <div class="button-cells" >
-                <el-button  class="cards" v-show="isdoghover" @click="openmusicplay" type="primary"> {{ maintext }}</el-button>
+                <el-button   class="cards" v-show="isdoghover" @click="openmusicplay" type="primary"> {{ maintext }}</el-button>
 
                 <!-- 
                 <el-button v-if="textresult" type="info" @click="copy">复制</el-button> -->
