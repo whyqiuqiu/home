@@ -19,4 +19,10 @@ export const searchmusic= (keyworlds)=>{
     
 }
 
+// 获取歌曲url
+
+export const urlmusic =(id,level)=>{
+    return getmusic(`/song/url/v1?id=${id}&level=${level}`)
+}
+
 

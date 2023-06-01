@@ -28,7 +28,8 @@ const gettiangouData = () => {
 };
 
 onMounted(() => {
-    gettiangouData();
+    // gettiangouData();
+    updatetiangou()
 });
 
 // 更新舔狗数据
