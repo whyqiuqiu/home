@@ -20,13 +20,23 @@ const keywords = ref("")
 const musiclistshow = ref(false);
 const music_list_date = ref([])
 // 歌曲播放默认链接
-const musicurl = ref("https://service-l6zvr0v9-1318496409.sh.apigw.tencentcs.com//song/url/v1?id=2046562196&level=lossless")
+const musicurl = ref("")
 // leval可以调节音乐品质 默认无损 standard => 标准,higher => 较高, exhigh=>极高, lossless=>无损, hires=>Hi-Res, jyeffect => 鲸云臻音, jymaster => 鲸云母带
 const leval = ref('lossless')
 // audio 播放器
 const audioRef = ref()
 // 自动播放
-const autoplay =ref("true")
+const autoplay = ref("false")
+// index
+const selectIndex = ref('-1')
+
+// 改变index
+const decChange = (index) => {
+    selectIndex.value = index;
+    //  console.log("selectIndex："+selectIndex.value)
+
+}
+
 
 // 搜素
 const getmusicData = () => {
@@ -57,7 +67,7 @@ const playmusic = (id) => {
             // console.log("url:"+res.data[0].url)
             musicurl.value = res.data[0].url
             console.log("url:" + musicurl.value)
-            
+
             // 通知
         }
         else {
@@ -73,6 +83,7 @@ const updatemusicData = () => {
         title: '提醒',
         message: h('i', { style: 'color: teal' }, '找到了喵'),
     })
+
     // 防抖
     debounce(() => {
         getmusicData();
@@ -81,11 +92,16 @@ const updatemusicData = () => {
 };
 
 // 播放防抖
-const updateplaymusic = (id) => {
+const updateplaymusic = (id, index) => {
+
+    decChange(index)
+
+
     ElNotification({
         title: '提醒',
         message: h('i', { style: 'color: teal' }, '现在开始播放喵'),
     })
+
     // 防抖
     debounce(() => {
         playmusic(id);
@@ -107,25 +123,26 @@ onMounted(() => {
 
 <template>
     <div class="music" v-show="store.musicOpenState">
+        <div class="music-top">
+            <div class="searchfuc cards">
+                <el-input v-model="keywords" placeholder="请输入关键词" clearable @keyup.enter.native="updatemusicData" />
 
-        <div class="searchfuc cards">
-            <el-input v-model="keywords" placeholder="请输入关键词" clearable @keyup.enter.native="updatemusicData" />
-
-            <div class="search_icon " @click="updatemusicData">
-                <img src="../assets/search.svg" alt="">
+                <div class="search_icon " @click="updatemusicData">
+                    <img src="../assets/search.svg" alt="">
+                </div>
+            </div>
+            <!-- 音乐播放容器 -->
+            <div class="player-contiain" v-show="musicurl">
+                <audio controls ref="audioRef" :autoplay="autoplay" :src="musicurl">
+                </audio>
             </div>
         </div>
-        <!-- 音乐播放容器 -->
-        <div class="player-contiain">
-            <audio controls ref="audioRef" :autoplay="autoplay" :src="musicurl">
 
-                <!-- <source  type="audio/mpeg" /> -->
-            </audio>
-        </div>
+
+
 
         <div class="music_list ">
-            <!-- <el-skeleton :rows="1" animated v-show="musiclistshow" :loading="loading"/> -->
-            <!-- 内容骨架屏 -->
+
             <el-skeleton style="width: 100%" direction="vertical" alignment="flex-start" :loading="musiclistshow" animated
                 class="content-skeleton">
                 <template #template>
@@ -152,7 +169,10 @@ onMounted(() => {
 
 
 
-            <div class="music_list_item cards" v-for="(item, index) in music_list_date" @click="updateplaymusic(item.id)">
+            <div class="music_list_item cards" ref="" :class="[index == selectIndex ? 'acitve' : 'noactive']"
+                v-for="(item, index) in music_list_date" @click="updateplaymusic(item.id, index)">
+                <span class="cur"></span>
+                <span class="music_list_number">{{ index + 1 }}</span>
                 <el-text class="mx-1" size="large">{{ item.name }}</el-text>
 
             </div>
@@ -164,6 +184,23 @@ onMounted(() => {
 
 <style scoped lang='scss'>
 .music {
+    width: 720px;
+    margin-top: 50px;
+
+    .player-contiain {
+        height: 40px;
+    }
+
+    .music_list_number {
+        margin-right: 12px;
+    }
+
+    .music-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
     .searchfuc {
         display: flex;
         justify-content: center;
@@ -173,6 +210,25 @@ onMounted(() => {
     }
 
     .music_list {
+        height: auto;
+        max-height: 420px;
+        overflow: hidden;
+        box-sizing: content-box;
+        overflow-y: auto;
+        box-shadow: 0 2px 2px 0 rgb(0 0 0 / 7%), 0 1px 5px 0 rgb(0 0 0 / 10%);
+        line-height: initial;
+        position: relative;
+        background: transparent;
+        background: rgba(255, 255, 255, 0.1);
+        width: 400px;
+        border-radius: 5px;
+
+        // 活跃样式
+        .acitve {
+            background: rgba(255, 255, 255, 0.54) !important;
+            border-radius: 6px !important;
+        }
+
         .el-skeleton.is-animated {
             background-color: #ffffff;
             border-radius: 10px;
@@ -205,15 +261,52 @@ onMounted(() => {
     }
 
     .music_list_item {
-        height: 100px;
-        line-height: 100px;
-        text-align: center;
-        // background-color: #fff;
-        margin-bottom: 10px;
+
+        background: rgba(255, 255, 255, 0.2509803922);
+        border-radius: 6px;
+        border-color: transparent;
+        position: relative;
+        height: 32px;
+        line-height: 32px;
+        padding: 0 15px;
+        font-size: 12px;
+        cursor: pointer;
+        -webkit-transition: all 0.2s ease;
+        transition: all 0.2s ease;
+        overflow: hidden;
+        margin: 0px 5px 0px 5px;
+        text-align: start;
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
 
         .el-text {
             --el-text-color: #ffffff;
         }
+
+
+
+    }
+
+    .music_list_item:hover {
+        background: rgba(255, 255, 255, 0.54) !important;
+        border-radius: 6px !important;
+    }
+
+  
+}
+.music_list_item.cards.acitve{
+    .cur {
+        width: 3px;
+        height: 22px;
+        position: absolute;
+        left: 1px;
+        top: 5px;
+        -webkit-transition: background-color .3s;
+        transition: background-color .3s;
+        background-color: #fffeee;
+
+
     }
 }
 </style>
