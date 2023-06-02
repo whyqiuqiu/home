@@ -1,9 +1,9 @@
 <script setup>
-import { h, ref, reactive, onMounted } from 'vue'
+import { h, ref, reactive, onMounted, watch } from 'vue'
 import { searchmusic, urlmusic } from "../api/index"
 import debounce from "../utils/debounce.js"
 import { mainStore } from "../store/index";
-import { ElNotification } from 'element-plus'
+import { ElNotification, ElMessage } from 'element-plus'
 import {
     Check,
     Delete,
@@ -20,22 +20,34 @@ const keywords = ref("")
 const musiclistshow = ref(false);
 const music_list_date = ref([])
 // 歌曲播放默认链接
-const musicurl = ref("")
+const musicurl = ref('')
 // leval可以调节音乐品质 默认无损 standard => 标准,higher => 较高, exhigh=>极高, lossless=>无损, hires=>Hi-Res, jyeffect => 鲸云臻音, jymaster => 鲸云母带
-const leval = ref('lossless')
+const leval = ref('standard')
 // audio 播放器
-const audioRef = ref()
+const audioRef = ref('')
 // 自动播放
-const autoplay = ref("false")
+const autoplay = ref("true")
 // index
 const selectIndex = ref('-1')
+// 当前播放的专辑图片url
+const playimgurl = ref('')
+const palytitle = ref('')
+// 播放状态
+const playingstate = ref(false)
 
 // 改变index
 const decChange = (index) => {
     selectIndex.value = index;
     //  console.log("selectIndex："+selectIndex.value)
-
 }
+
+
+// audio :{
+//  /**
+//              * audio自身事件
+//              * */
+// play: false,
+// }
 
 
 // 搜素
@@ -48,12 +60,29 @@ const getmusicData = () => {
             musiclistshow.value = false
             console.log(res)
             music_list_date.value = res.result.songs
+            // author.value= res.data[0]
         }
         else {
-            throw console.error();
+            throw console.log(error);
         }
     })
 };
+
+// 暂停播放
+
+// const onpause =  watch(audioRef,(value,playing) =>{
+//     console.log('监听的数据',value,playing)
+//     // audioRef.value.pause
+// })
+
+// 还未实现封面暂停
+// watch(
+//     () => audioRef._value.paused,
+//     (value, oldValue) => {
+//       console.log(value, oldValue)
+//     }, {}
+//   )
+
 
 
 
@@ -62,16 +91,16 @@ const playmusic = (id) => {
     // leval可以调节音乐品质 默认无损
     urlmusic(id, leval.value).then((res) => {
         if (res.code = 200) {
-            // console.log(res)
+            console.log("播放音乐res：", res)
             // 获取播放链接
-            // console.log("url:"+res.data[0].url)
             musicurl.value = res.data[0].url
-            console.log("url:" + musicurl.value)
-
-            // 通知
+            playingstate.value=true;
+            // audio paly
+         
+            // console.log("url:" + musicurl.value)
         }
         else {
-            throw console.error();
+            throw console.log(error);
         }
     })
 }
@@ -81,7 +110,7 @@ const updatemusicData = () => {
 
     ElNotification({
         title: '提醒',
-        message: h('i', { style: 'color: teal' }, '找到了喵'),
+        message: h('i', { style: 'color: teal' }, '正在努力检索喵~'),
     })
 
     // 防抖
@@ -92,27 +121,35 @@ const updatemusicData = () => {
 };
 
 // 播放防抖
-const updateplaymusic = (id, index) => {
-
+const updateplaymusic = (id, index, name) => {
+    // 处理index
     decChange(index)
-
-
+    // 获取当前播放图片的url
+    playimgurl.value=music_list_date._rawValue[index].al.picUrl;
+    palytitle.value
     ElNotification({
         title: '提醒',
-        message: h('i', { style: 'color: teal' }, '现在开始播放喵'),
+        message: h('i', { style: 'color: teal' }, '等待加载一会儿喵'),
     })
-
     // 防抖
     debounce(() => {
         playmusic(id);
-    }, 1000);
-    // 播放 暂停也同理
-    audioRef.value?.play()
+       console.log(music_list_date._rawValue[index].al.picUrl) 
+        // 提醒
+        ElMessage({
+            message: '喵喵：' + name + "惹~",
+            type: 'success',
+        })
+    }, 100);
+ 
+
+
 };
 
 
 onMounted(() => {
     // getmusicData(input);
+    // onpause()
 });
 
 
@@ -132,14 +169,11 @@ onMounted(() => {
                 </div>
             </div>
             <!-- 音乐播放容器 -->
-            <div class="player-contiain" v-show="musicurl">
+            <div class="player-contiain" v-show="playingstate">
                 <audio controls ref="audioRef" :autoplay="autoplay" :src="musicurl">
                 </audio>
             </div>
         </div>
-
-
-
 
         <div class="music_list ">
 
@@ -167,16 +201,32 @@ onMounted(() => {
                 </template>
             </el-skeleton>
 
+            <div class="music_list--left">
+                <div class="music_list_item cards" ref="" :class="[index == selectIndex ? 'acitve' : '']"
+                    v-for="(item, index) in music_list_date" @click="updateplaymusic(item.id, index, item.name)">
+                    <span class="cur"></span>
+                    <span class="music_list_number">{{ index + 1 }}</span>
+                    <el-text class="mx-1" size="large">{{ item.name }}</el-text>
+                    <span class="author">{{ item.ar[0].name }}</span>
 
-
-            <div class="music_list_item cards" ref="" :class="[index == selectIndex ? 'acitve' : 'noactive']"
-                v-for="(item, index) in music_list_date" @click="updateplaymusic(item.id, index)">
-                <span class="cur"></span>
-                <span class="music_list_number">{{ index + 1 }}</span>
-                <el-text class="mx-1" size="large">{{ item.name }}</el-text>
+                </div>
 
             </div>
+
+
+
         </div>
+
+        <!-- 详细信息 -->
+        <div class="music_list_maininfo" v-show="playingstate">
+            <div class="music_list_maininfo--top">
+                <span></span>
+                <img class="animation2"  :src="playimgurl" alt="">
+            </div>
+           
+
+        </div>
+
 
     </div>
 </template>
@@ -185,10 +235,15 @@ onMounted(() => {
 <style scoped lang='scss'>
 .music {
     width: 720px;
-    margin-top: 50px;
+    margin-top: 200px;
+    position: relative;
 
     .player-contiain {
         height: 40px;
+
+        audio {
+            height: 40px;
+        }
     }
 
     .music_list_number {
@@ -207,6 +262,38 @@ onMounted(() => {
         width: 400px;
         margin: 10px 0;
         height: 40px;
+    }
+
+    .music_list_maininfo {
+        width: 320px;
+        height: 200px;
+        position: absolute;
+        right: 0;
+        top: 60px;
+
+        img {
+            width: 200px;
+            height: 200px;
+        }
+        .animation1 {
+        width: 200px;
+        height: 200px;
+        border: 1px solid white;
+        border-radius: 100px;
+        overflow: hidden;
+        float: left;
+        animation: frame 6s linear paused;
+    }
+
+    .animation2 {
+        width: 200px;
+        height: 200px;
+        border: 1px solid white;
+        border-radius: 100px;
+        overflow: hidden;
+        float: left;
+        animation: rotate 20s linear infinite;
+    }
     }
 
     .music_list {
@@ -240,7 +327,7 @@ onMounted(() => {
         margin-left: -40px;
         width: 40px;
         background-color: #fff;
-        height: 39.2px;
+        height: 38.2px;
         border-radius: 20%;
 
         img {
@@ -261,6 +348,17 @@ onMounted(() => {
     }
 
     .music_list_item {
+        span.author {
+            position: absolute;
+            right: 1em;
+            text-align: left;
+            font-size: 11pt;
+            width: 24%;
+            overflow: hidden;
+            white-space: nowrap;
+            word-break: keep-all;
+            text-overflow: ellipsis;
+        }
 
         background: rgba(255, 255, 255, 0.2509803922);
         border-radius: 6px;
@@ -282,6 +380,12 @@ onMounted(() => {
 
         .el-text {
             --el-text-color: #ffffff;
+            display: inline-block;
+            width: 67%;
+            overflow: hidden;
+            white-space: nowrap;
+            word-break: keep-all;
+            text-overflow: ellipsis;
         }
 
 
@@ -293,9 +397,10 @@ onMounted(() => {
         border-radius: 6px !important;
     }
 
-  
+
 }
-.music_list_item.cards.acitve{
+
+.music_list_item.cards.acitve {
     .cur {
         width: 3px;
         height: 22px;
@@ -308,5 +413,6 @@ onMounted(() => {
 
 
     }
+
 }
 </style>

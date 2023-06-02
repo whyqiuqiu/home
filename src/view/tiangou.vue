@@ -49,7 +49,7 @@ const openmusicplay = () =>{
 // 通知
    ElNotification({
     title: '提醒',
-    message: h('i', { style: 'color: teal' }, '已经打开搜索工具'),
+    message: h('i', { style: 'color: teal' }, '打开播放器了喵~'),
   })
 }
 
