@@ -1,6 +1,6 @@
 <script setup>
 import { h, ref, reactive, onMounted, watch } from 'vue'
-import { searchmusic, urlmusic } from "../api/index"
+import { searchmusic, urlmusic, urllyrics } from "../api/index"
 import debounce from "../utils/debounce.js"
 import { mainStore } from "../store/index";
 import { ElNotification, ElMessage } from 'element-plus'
@@ -34,6 +34,11 @@ const playimgurl = ref('')
 const palytitle = ref('')
 // 播放状态
 const playingstate = ref(false)
+// 存储歌词信息
+const playlyrics = ref('')
+const lineArr = ref([])
+// 最终取值的数组
+const lyricsObjArr = ref([])
 
 // 改变index
 const decChange = (index) => {
@@ -41,13 +46,8 @@ const decChange = (index) => {
     //  console.log("selectIndex："+selectIndex.value)
 }
 
-
-// audio :{
-//  /**
-//              * audio自身事件
-//              * */
-// play: false,
-// }
+const lyricIndex = ref()
+// audio currentTime
 
 
 // 搜素
@@ -68,16 +68,24 @@ const getmusicData = () => {
     })
 };
 
-// 暂停播放
 
-// const onpause =  watch(audioRef,(value,playing) =>{
-//     console.log('监听的数据',value,playing)
-//     // audioRef.value.pause
-// })
+
+// 控制audio播放暂停
+// 暂停播放
+const onPause = () => {
+    // 状钛
+    playingstate.value = false
+}
+
+const onPlay = () => {
+    // 状钛
+    playingstate.value = true
+}
+
 
 // 还未实现封面暂停
 // watch(
-//     () => audioRef._value.paused,
+//     () => audioRef,
 //     (value, oldValue) => {
 //       console.log(value, oldValue)
 //     }, {}
@@ -94,10 +102,25 @@ const playmusic = (id) => {
             console.log("播放音乐res：", res)
             // 获取播放链接
             musicurl.value = res.data[0].url
-            playingstate.value=true;
+            playingstate.value = false;
+
             // audio paly
-         
+
             // console.log("url:" + musicurl.value)
+        }
+        else {
+            throw console.log(error);
+        }
+    })
+    // 获取歌词
+    urllyrics(id).then((res) => {
+        if (res.code = 200) {
+            console.log("歌词", res)
+            playlyrics.value = res.lrc.lyric
+            // main 函数
+            getmusiclyrics()
+            // formatLyricTime()
+
         }
         else {
             throw console.log(error);
@@ -125,8 +148,15 @@ const updateplaymusic = (id, index, name) => {
     // 处理index
     decChange(index)
     // 获取当前播放图片的url
-    playimgurl.value=music_list_date._rawValue[index].al.picUrl;
+    playimgurl.value = music_list_date._rawValue[index].al.picUrl;
     palytitle.value
+    // 歌词
+    // 存储歌词信息
+    playlyrics.value = ''
+    lineArr.value = []
+    // 最终取值的数组
+    lyricsObjArr.value = []
+
     ElNotification({
         title: '提醒',
         message: h('i', { style: 'color: teal' }, '等待加载一会儿喵'),
@@ -134,14 +164,15 @@ const updateplaymusic = (id, index, name) => {
     // 防抖
     debounce(() => {
         playmusic(id);
-       console.log(music_list_date._rawValue[index].al.picUrl) 
+        console.log(music_list_date._rawValue[index].al.picUrl)
         // 提醒
         ElMessage({
             message: '喵喵：' + name + "惹~",
             type: 'success',
         })
-    }, 100);
- 
+    }, 300);
+    playingstate.value = true;
+    console.log('length',lyricsObjArr.length)
 
 
 };
@@ -151,6 +182,65 @@ onMounted(() => {
     // getmusicData(input);
     // onpause()
 });
+
+const formatLyricTime = (time) => { // 格式化歌词的时间 转换成 sss:ms
+    const regMin = /.*:/
+    const regSec = /:.*\./
+    const regMs = /\./
+
+    const min = parseInt(time.match(regMin)[0].slice(0, 2))
+    let sec = parseInt(time.match(regSec)[0].slice(1, 3))
+    const ms = time.slice(time.match(regMs).index + 1, time.match(regMs).index + 3)
+    if (min !== 0) {
+        sec += min * 60
+    }
+    return Number(sec + '.' + ms)
+}
+
+
+
+// 歌词主函数
+const getmusiclyrics = () => {
+    // 切割字符 拿到每一行数据
+    const regNewLine = /\n/;
+    lineArr.value = playlyrics.value.split(regNewLine)
+    console.log(lineArr.value)
+    // 分割时间和歌词 拿到每一行数据
+    const regTime = /\[\d{2}:\d{2}.\d{2,3}\]/
+    // 对lineArr数组进行遍历分隔
+    Array.from(lineArr);
+    lineArr.value.forEach(item => {
+        if (item === '') return
+        const obj = {}
+        const time = item.match(regTime)
+        obj.lyric = item.split(']')[1].trim() === '' ? '' : item.split(']')[1].trim()
+        obj.time = time ? formatLyricTime(time[0].slice(1, time[0].length - 1)) : 0
+        obj.uid = Math.random().toString().slice(-6)
+        if (obj.lyric === '') {
+            console.log('这一行没有歌词')
+        } else {
+            Array.from(lyricsObjArr);
+            lyricsObjArr.value.push(obj)
+        }
+
+
+    })
+
+    // 匹配歌词
+    for (let i = 0; i < lyricsObjArr.value.length; i++) {
+        if (currentTime > (parseInt(lyricsObjArr[i].time))) {
+            const index = $refs.lyric[i].dataset.index
+            if (i === parseInt(index)) {
+               lyricIndex = i
+               $refs.lyricUL.style.transform = `translateY(${170 - (30 * (i + 1))}px)`
+            }
+        }
+    }
+
+
+}
+
+
 
 
 
@@ -169,8 +259,9 @@ onMounted(() => {
                 </div>
             </div>
             <!-- 音乐播放容器 -->
-            <div class="player-contiain" v-show="playingstate">
-                <audio controls ref="audioRef" :autoplay="autoplay" :src="musicurl">
+            <div class="player-contiain" v-show="musicurl">
+                <audio @ended="overAudio" @pause="onPause" @play="onPlay" controls ref="audioRef" :autoplay="autoplay"
+                    :src="musicurl">
                 </audio>
             </div>
         </div>
@@ -218,12 +309,22 @@ onMounted(() => {
         </div>
 
         <!-- 详细信息 -->
-        <div class="music_list_maininfo" v-show="playingstate">
+        <div class="music_list_maininfo " v-show="musicurl">
             <div class="music_list_maininfo--top">
                 <span></span>
-                <img class="animation2"  :src="playimgurl" alt="">
+                <img :class="[playingstate == true ? 'animation2' : 'animation1']" :src="playimgurl" alt="">
             </div>
-           
+
+            <div class="lyrics " ref="lyricUL">
+                <li class="music_list_item lyrics_item" v-for="(item, index) in lyricsObjArr"
+                :style="{ color: lyricIndex == i ? 'skyblue' : '#ded9d9' }" 
+                    :key="item.uid" :data-index='i'
+                    ref="lyric">
+                    {{ item.lyric }}
+                </li>
+
+            </div>
+
 
         </div>
 
@@ -270,30 +371,54 @@ onMounted(() => {
         position: absolute;
         right: 0;
         top: 60px;
+        display: grid;
+
+        .lyrics {
+            height: 420px;
+            max-height: 420px;
+            overflow: hidden;
+            box-sizing: content-box;
+            overflow-y: auto;
+            box-shadow: 0 2px 2px 0 rgb(0 0 0 / 7%), 0 1px 5px 0 rgb(0 0 0 / 10%);
+            line-height: initial;
+            position: relative;
+            background: transparent;
+            background: rgba(255, 255, 255, 0.1);
+            width: 300px;
+            border-radius: 5px;
+
+            .lyrics_item {
+                text-align: center;
+                display: flex;
+                justify-content: center;
+                color: #fff;
+            }
+        }
 
         img {
             width: 200px;
             height: 200px;
         }
-        .animation1 {
-        width: 200px;
-        height: 200px;
-        border: 1px solid white;
-        border-radius: 100px;
-        overflow: hidden;
-        float: left;
-        animation: frame 6s linear paused;
-    }
 
-    .animation2 {
-        width: 200px;
-        height: 200px;
-        border: 1px solid white;
-        border-radius: 100px;
-        overflow: hidden;
-        float: left;
-        animation: rotate 20s linear infinite;
-    }
+        .animation1 {
+            width: 200px;
+            height: 200px;
+            border: 1px solid white;
+            border-radius: 100px;
+            overflow: hidden;
+            float: left;
+            animation: frame 6s linear paused;
+        }
+
+        .animation2 {
+            width: 200px;
+            height: 200px;
+            border: 1px solid white;
+            border-radius: 100px;
+            overflow: hidden;
+            float: left;
+            animation: rotate 20s linear infinite;
+        }
     }
 
     .music_list {

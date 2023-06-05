@@ -26,3 +26,8 @@ export const urlmusic =(id,level)=>{
 }
 
 
+// 获取歌词
+export const  urllyrics = (id)=>{
+    // return getmusic (`/lyric/new?id=${id}`)
+    return getmusic (`/lyric?id=${id}`)
+}
