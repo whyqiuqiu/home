@@ -7,6 +7,7 @@ let requestHead = {
         // 'Authorization': 'Basic ' + Base64.encode('6143668863428a8ec3eceebf9d251183'),
         'Access-Control-Allow-Origin': '*',
         'key':import.meta.env.VITE_SITE_BASEKEY,
+        // 'base':base,
     }
 };
 
