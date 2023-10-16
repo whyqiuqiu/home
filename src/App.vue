@@ -1,6 +1,8 @@
 <script setup>
+// 引入的组件
 import Background from "./components/Background/index.vue"
 import tiangou from "./view/tiangou.vue";
+import  Header  from "./components/HeaderD/index.vue";
 import music from "./view/music.vue";
 import { onMounted, onBeforeUnmount, watch } from "vue";
 import cursorInit from "./utils/cursor.js"
@@ -52,7 +54,8 @@ onMounted(()=>{
     <Background/>
 
       <div class="main">
-        <tiangou></tiangou>
+        <Header></Header>
+        <tiangou></tiangou> 
         <music></music>
       </div>
 

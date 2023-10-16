@@ -5,6 +5,7 @@ import {
 export const mainStore = defineStore("main", {
     state: () => {
         return {
+            isdoghover :false,
             // innerWidth: null, // 当前窗口宽度
             coverType: "3", // 壁纸种类
             // siteStartShow: true, // 建站日期显示

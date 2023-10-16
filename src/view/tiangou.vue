@@ -63,7 +63,9 @@ const openmusicplay = () =>{
         <div class="context cards" v-show="!store.musicOpenState"  @mouseenter="isdoghover = true" @mouseleave="isdoghover = false">
             <div class="maintext" @click="updatetiangou">
 
-                <el-text type="primary" class="mx-1" size="large" v-model="textresult">{{ textresult }}</el-text>
+                <el-text type="primary" class="mx-1" size="large" v-model="textresult">{{ textresult }}  </el-text>
+                
+                <el-text  type="primary" class="mx-1" size="small" v-model="textresult"> 下一条 </el-text>
             </div>
             <div class="button-cells" >
                 <el-button   class="cards" v-show="isdoghover" @click="openmusicplay" type="primary"> {{ maintext }}</el-button>
@@ -81,7 +83,11 @@ const openmusicplay = () =>{
     height: auto;
     width: 350px;
     margin: 0 auto;
-
+    .maintext {
+    display: grid;
+    align-items: center;
+    justify-items: end;
+}
     .context {
         // opacity: 0.3;
         background-color: rgb(255, 255, 255, 0.45);
@@ -96,6 +102,7 @@ const openmusicplay = () =>{
     .maintext {
         margin-bottom: 10px;
         text-align: left;
+        
     }
 
     .el-text.el-text--primary {
