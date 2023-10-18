@@ -331,7 +331,7 @@ const getmusiclyrics = () => {
 
       <div class="music_list--left">
         <div
-          class="music_list_item cards"
+          class="music_list_item "
           ref=""
           :class="[index == selectIndex ? 'acitve' : '']"
           v-for="(item, index) in music_list_date"
@@ -512,7 +512,7 @@ const getmusiclyrics = () => {
     overflow: hidden;
     box-sizing: content-box;
     overflow-y: auto;
-    box-shadow: 0 2px 2px 0 rgb(0 0 0 / 7%), 0 1px 5px 0 rgb(0 0 0 / 10%);
+    // box-shadow: 0 2px 2px 0 rgb(0 0 0 / 7%), 0 1px 5px 0 rgb(0 0 0 / 10%);
     line-height: initial;
     position: relative;
     background: transparent;
@@ -579,8 +579,8 @@ const getmusiclyrics = () => {
     padding: 0 15px;
     font-size: 12px;
     cursor: pointer;
-    -webkit-transition: all 0.2s ease;
-    transition: all 0.2s ease;
+    // -webkit-transition: all 0.2s ease;
+    // transition: all 0.2s ease;
     overflow: hidden;
     margin: 0px 5px 0px 5px;
     text-align: start;
@@ -612,8 +612,8 @@ const getmusiclyrics = () => {
     position: absolute;
     left: 1px;
     top: 5px;
-    -webkit-transition: background-color 0.3s;
-    transition: background-color 0.3s;
+    // -webkit-transition: background-color 0.3s;
+    // transition: background-color 0.3s;
     background-color: #fffeee;
   }
 }

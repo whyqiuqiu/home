@@ -4,6 +4,8 @@ import { gettiangou, INDEXKEY } from "../api/index"
 import debounce from "../utils/debounce.js"
 import { mainStore } from "../store/index";
 import { ElNotification } from 'element-plus'
+// 导入复制模块
+import useClipboard from 'vue-clipboard3'
 const store = mainStore();
 
 // 获取舔狗文案
@@ -11,13 +13,14 @@ const maintext = ref(null)
 const textresult = ref('目前访问量过多，请稍后再试')
 // 开启音乐状态
 const isdoghover = ref(false)
-
+// 注册复制函数
+const { toClipboard } = useClipboard()
 
 const gettiangouData = () => {
     gettiangou(INDEXKEY).then((res) => {
         maintext.value = "打开音乐播放器"
         if (res.code = 200) {
-            console.log(res)
+            // console.log(res)
             textresult.value = res.result.content
             maintext.value = "打开音乐播放器"
         }
@@ -53,6 +56,16 @@ const openmusicplay = () =>{
   })
 }
 
+// 复制文本
+ const copybtn = () => {
+     
+    toClipboard(textresult.value) 
+    ElNotification({
+    title: '提醒',
+    message: h('i', { style: 'color: teal' }, '成功复制到剪切板了喵~'),
+  })
+     
+    }
 
 </script>
 
@@ -61,15 +74,17 @@ const openmusicplay = () =>{
     <div class="dog">
 
         <div class="context cards" v-show="!store.musicOpenState"  @mouseenter="isdoghover = true" @mouseleave="isdoghover = false">
+            <el-button  v-show="isdoghover"  class="copybtn"  @click="copybtn" type="primary"> 复制</el-button>
             <div class="maintext" @click="updatetiangou">
 
                 <el-text type="primary" class="mx-1" size="large" v-model="textresult">{{ textresult }}  </el-text>
                 
                 <el-text  type="primary" class="mx-1" size="small" v-model="textresult"> 下一条 </el-text>
+                
             </div>
             <div class="button-cells" >
                 <el-button   class="cards" v-show="isdoghover" @click="openmusicplay" type="primary"> {{ maintext }}</el-button>
-
+             
                 <!-- 
                 <el-button v-if="textresult" type="info" @click="copy">复制</el-button> -->
             </div>
@@ -96,6 +111,10 @@ const openmusicplay = () =>{
         border-radius: 10px;
         padding: 30px 20px;
         position: relative;
+        .copybtn{
+            bottom: 0;
+            top: auto !important;
+        }
 
     }
 

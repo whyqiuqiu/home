@@ -34,4 +34,8 @@ const goBack = () => {
   </div>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.header{
+  margin-bottom: 20px;
+}
+</style>

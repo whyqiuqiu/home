@@ -9,6 +9,12 @@ export const gettiangou = (key) => {
     return get(`/tiangou/index?key=${key}`);
 }
 // ?key=${Key}
+// 获取热搜
+
+export const gethotpoint = (key)=>{
+    return get(`/networkhot/index?key=${key}`);
+}
+
 
 
 // 网易云data
@@ -31,3 +37,7 @@ export const  urllyrics = (id)=>{
     // return getmusic (`/lyric/new?id=${id}`)
     return getmusic (`/lyric?id=${id}`)
 }
+
+
+
+
