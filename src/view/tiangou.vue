@@ -30,18 +30,23 @@ const gettiangouData = () => {
     })
 };
 
+
+
+
+
 onMounted(() => {
-    // gettiangouData();
+    gettiangouData();
     updatetiangou()
 });
 
 // 更新舔狗数据
 const updatetiangou = () => {
+    
     textresult.value = "loading......";
     // 防抖
     debounce(() => {
         gettiangouData();
-
+        
     }, 500);
 
 };

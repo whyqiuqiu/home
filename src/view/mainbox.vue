@@ -7,8 +7,12 @@ import Header from "../components/HeaderD/index.vue"
 import music from "./music.vue";
 import hotpoint from "./hotpoint.vue";
 import { mainStore } from "../store/index";
+import about from "./about.vue";
 
 const store = mainStore()
+
+
+
 </script>
 
 <template>
@@ -18,6 +22,7 @@ const store = mainStore()
       <tiangou></tiangou>
       <hotpoint></hotpoint>
       <music></music>
+      <about></about>
     </div>
   </div>
 </template>

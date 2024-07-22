@@ -83,7 +83,7 @@ const getcloudhot =() =>{
                 <el-text  type="primary" class="mx-1" size="small" v-model="textresult"> 下一条 </el-text>
                 
                 <div class="button-cells" >
-                <el-button   class="cards" v-show="ishothover" @click="openmusicplay" type="primary"> {{ maintext }}</el-button>
+                <el-button   class="cards titlecom"  @click="openmusicplay" type="primary"> {{ maintext }}</el-button>
              
                 <!-- 
                 <el-button v-if="textresult" type="info" @click="copy">复制</el-button> -->
@@ -105,6 +105,10 @@ const getcloudhot =() =>{
     display: grid;
     align-items: center;
     justify-items: end;
+}
+.titlecom{
+    font-size: large;
+    font-weight: bold;
 }
     .context {
         // opacity: 0.3;

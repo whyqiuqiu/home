@@ -6,7 +6,7 @@ export const mainStore = defineStore("main", {
     state: () => {
         return {
             // 调试开启 true
-            islogin:false,
+            islogin:true,
             isdoghover :false,
             ishothover:false,
             realIP:"115.194.217.142",
@@ -17,6 +17,8 @@ export const mainStore = defineStore("main", {
             // musicVolume: 0, // 音乐音量;
             musicOpenState: false, // 音乐面板开启状态
             backgroundShow: true, // 壁纸展示状态
+
+            aboutOpenState:false,
             // boxOpenState: false, // 盒子开启状态
             // mobileOpenState: false, // 移动端开启状态
             // mobileFuncState: false, // 移动端功能区开启状态

@@ -19,20 +19,18 @@
         <input type="text" id="password" v-model="password" />
       </div>
 
- 
       <button type="submit">登录</button>
     </form>
   </div>
 </template>
 
 <script setup>
-import { h, ref,onMounted } from "vue";
+import { h, ref, onMounted } from "vue";
 import { captcha, captchalogin, captchaconfine } from "../api/index";
 import { ElNotification, ElMessage } from "element-plus";
 
 import { mainStore } from "../store/index";
 // 使用ref来定义响应式数据
-
 
 const store = mainStore();
 const username = ref("");
@@ -40,7 +38,7 @@ const password = ref("");
 const captchav = ref("");
 const logintext = ref(false);
 const logintextt = ref("切换登录");
-const iscaptchacon = ref(false)
+const iscaptchacon = ref(false);
 const recodelogin = ref(false);
 
 const inrecodelogin = () => {
@@ -52,17 +50,17 @@ const inrecodelogin = () => {
 const captchacon = () => {
   captchaconfine(username.value, captchav.value).then((res) => {
     if (res.code == 200) {
-      console.log("验证验证码res:",res);
-      console.log("islogin:",store.islogin)
+      console.log("验证验证码res:", res);
+      console.log("islogin:", store.islogin);
       store.islogin = true;
-      iscaptchacon.value=true
+      iscaptchacon.value = true;
       ElNotification({
         title: "提醒",
         message: h("i", { style: "color: teal" }, "验证码校验成功"),
       });
-      console.log("islogin:",store.islogin)
+      console.log("islogin:", store.islogin);
     } else {
-      iscaptchacon.value=false
+      iscaptchacon.value = false;
       ElNotification({
         title: "提醒",
         message: h("i", { style: "color: teal" }, "验证码填写错误请重新验证"),
@@ -74,41 +72,73 @@ const captchacon = () => {
 
 const login = () => {
   
-  // 在这里编写登录逻辑
-  console.log("登录:", username.value, captchav.value);
-  // 目前接口原因暂时不支持密码登录
-  if(password.value){
+  if (
+    // 验证有无填写手机号和验证码
+    username.value == "" ||
+    username.value == null ||
+    username.value == undefined ||
+    captchav.value == "" ||
+    captchav.value == null
+  ) {
     ElNotification({
+      title: "提醒",
+      message: h("i", { style: "color: teal" }, "手机号与验证码不得为空喵"),
+    });
+  } else {
+    if (password.value) {
+      ElNotification({
         title: "提醒",
-        message: h("i", { style: "color: teal" }, "暂时不支持密码登录请切换登录方式"),
-      });  
+        message: h(
+          "i",
+          { style: "color: teal" },
+          "暂时不支持密码登录请切换登录方式"
+        ),
+      });
       // 清空密码
-      password.value='';
+      password.value = "";
       return false;
-  }
+    }
 
-  captchacon()
-  // 验证验证码是否校验成功
-  if(iscaptchacon.value=true){
-    // 验证码登录
-    captchalogin(username.value,password.value, captchav.value,store.realIP).then((res)=>{
-
-      console.log("验证码登录res:",res)
-      if(res.code==200){
-        console.log("success200:",res)
-      }else{
-        console.log("200fales:",res)
-        throw console.log(error)
-      }
-    })
+    captchacon();
+    // 验证验证码是否校验成功
+    if ((iscaptchacon.value = true)) {
+      // 验证码登录
+      captchalogin(
+        username.value,
+        password.value,
+        captchav.value,
+        store.realIP
+      ).then((res) => {
+        console.log("验证码登录res:", res);
+        if (res.code == 200) {
+          console.log("success200:", res);
+        } else {
+          console.log("200fales:", res);
+          // 网易云不支持第三方登录 关闭丢错
+          // throw console.log(error)
+        }
+      });
+    }
   }
 };
+// 在这里编写登录逻辑
+// console.log("登录:", username.value, captchav.value);
+// 目前接口原因暂时不支持密码登录
 
 // 发送验证码
 const getrecode = () => {
-  console.log(username.value);
+  // console.log(username.value);
   captcha(username.value).then((res) => {
     if (res.code == 200) {
+      ElNotification({
+        title: "提醒",
+        message: h(
+          "i",
+          { style: "color: teal" },
+          "已发送验证码,前往手机查看喵"
+        ),
+      });
+
       console.log(res);
       // 获取到验证码
     } else {
@@ -117,29 +147,26 @@ const getrecode = () => {
   });
 };
 
-const console1 = ()=>{
-  console.log("1")
-}
+const console1 = () => {
+  console.log("1");
+};
 // const timerr = () => {
 //   setInterval(getrecode(),
-  
+
 //   console1()
 //   ,5000)
-  
+
 //   }
 
-onMounted(()=>{
- 
-})
+onMounted(() => {});
 </script>
 
 <style scoped>
-
-.login{
+.login {
   position: absolute;
-    left: 38%;
-    top: 25%;
-    background: rgba(255, 255, 255, 0.54) !important;
+  left: 38%;
+  top: 25%;
+  background: rgba(255, 255, 255, 0.54) !important;
 }
 input a {
   color: #333 !important;
