@@ -17,7 +17,7 @@ const ishothover = ref(false)
 const { toClipboard } = useClipboard()
 
 const maintitle = ref(null)
-
+//text
 
 onMounted(() => {
     // gettiangouData();
