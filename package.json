@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@icon-park/vue-next": "^1.4.2",
+    "@iconify-json/ep": "^1.1.15",
+    "@vueuse/core": "^10.11.0",
     "axios": "^1.4.0",
     "clipboard": "^2.0.11",
     "element-plus": "^2.3.5",

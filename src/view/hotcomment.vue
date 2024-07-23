@@ -21,10 +21,11 @@ const maintitle = ref(null)
 
 onMounted(() => {
     // gettiangouData();
-    updatecloudhot()
+    // 上线打开 调试减少调用
+    // updatecloudhot()
 });
 
-// 更新舔狗数据
+// 更新热评
 const updatecloudhot = () => {
     textresult.value = "loading......";
     // 防抖

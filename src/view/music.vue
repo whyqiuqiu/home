@@ -24,7 +24,7 @@ const music_list_date = ref([]);
 // 歌曲播放默认链接
 const musicurl = ref("");
 // leval可以调节音乐品质 默认无损 standard => 标准,higher => 较高, exhigh=>极高, lossless=>无损, hires=>Hi-Res, jyeffect => 鲸云臻音, jymaster => 鲸云母带
-const leval = ref("standard");
+const leval = ref("higher");
 // audio 播放器
 const audioRef = ref("");
 // 自动播放

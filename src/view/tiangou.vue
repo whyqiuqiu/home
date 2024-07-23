@@ -35,8 +35,9 @@ const gettiangouData = () => {
 
 
 onMounted(() => {
-    gettiangouData();
-    updatetiangou()
+    // 上线打开 调试减少调用
+    // gettiangouData();
+    // updatetiangou()
 });
 
 // 更新舔狗数据
